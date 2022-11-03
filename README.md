@@ -6,6 +6,8 @@
 
 # BaseElements
 
+![BaseElements Logo](https://baseelements.com/wp-content/uploads/2016/05/logo_BaseElements.png)
+
 [BaseElements](http://www.fm-crosscheck.com) is a FileMaker analysis tool from [Goya](https://goya.com.au/).
 
 # Script "fmIDE-Go to Thing from BaseElements"

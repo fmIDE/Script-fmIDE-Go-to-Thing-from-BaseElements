@@ -6,7 +6,7 @@
 
 # BaseElements
 
-[BaseElements](http://www.fm-crosscheck.com) is a FileMaker analysis tool from [[x] cross solutions GmbH](https://www.cross-solutions.de/).
+[BaseElements](http://www.fm-crosscheck.com) is a FileMaker analysis tool from [Goya](https://goya.com.au/).
 
 # Script "fmIDE-Go to Thing from BaseElements"
 

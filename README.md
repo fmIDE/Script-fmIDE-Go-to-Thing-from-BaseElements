@@ -30,16 +30,18 @@ In one click it jumps from the thing you are currently looking at in BaseElement
      
 
 3. Prepare BaseElements for fmIDE-Integration
-   - Paste this script into one of BaseElements's empty custom scripts
-     - Copy the [fmxmlsnippet.xml](fmxmlsnippet.xml) of the script (**in development** - coming shortly!)
-     - Convert the xml to FileMaker objects with a tool like fmCheckMate
+   - Create a new script in BaseElements named "fmIDE-Go to Thing from BaseElements"
+     - (or  delete the existing script's contents if you are updating)
+   - Paste the steps into it
+     - Copy the [fmxmlsnippet.xml](fmxmlsnippet.xml) of the script steps (**in development** - coming shortly!)
+     - Convert the xml to FileMaker objects with any FM-XML conversion tool like fmCheckMate
      - Paste the steps into the script.
 
-3. Perform a BaseElements analysis of your database
+4. Perform a BaseElements analysis of your database
    - Create a DDR of your database
    - Import the DDR into BaseElements
 
-4. Click, 💥 Bang! 👀 Goggle!
+5. Click, 💥 Bang! 👀 Goggle!
    - Navigate to any record in the analysis in BaseElements, for example to a script step
    - Press the shortcut key to run the "fmIDE-Go to Thing from BaseElements" script
    - You suddenly find yourself (more or less) looking at that thing in FileMaker, for example in the Script Workspace editing the script at exactly the script step.

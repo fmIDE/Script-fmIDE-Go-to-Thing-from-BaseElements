@@ -18,6 +18,8 @@
 # 
 # @author https://github.com/mrwatson-de ➜🌍 
 # 
+# 20221108 @mrwatson-de Version 0.3.1
+- Comment out the extra devbugging stuff
 # 20221108 @mrwatson-de Version 0.3 Fixed #1
 - Add basic parameters including fmide_url return parameter
 - Added TopCallStats
@@ -43,7 +45,7 @@ Set Variable [ $server_address ; Value: JSONGetElement( $_JSP ; "server_address"
 Set Variable [ $application_version ; Value: +GetValue ( Substitute ( Get ( ApplicationVersion ) ; "." ; "¶" ) ; 1 ) ] 
 Set Variable [ $server_address ; Value: Case ( not IsEmpty ( $server_address ) ; $server_address ; "$" ) ] 
 Set Variable [ $protocol ; Value: Case(   not IsEmpty( $protocol ) ; $protocol ;   /* Otherwise use the protocol of the current application */   $application_version < 19 ; "fmp" ;   $application_version < 40 ; "fmp" & $application_version ;   "claris"   ) ] 
-Set Variable [ $fmide_debug ; Value: Case( not IsEmpty ( $fmide_debug ) ; $fmide_debug ; Mod( Div( Get ( ActiveModifierKeys ) ; 2 ) ; 2 ) = 1 ; 1 ) ] 
+// Set Variable [ $fmide_debug ; Value: Case( not IsEmpty ( $fmide_debug ) ; $fmide_debug ; Mod( Div( Get ( ActiveModifierKeys ) ; 2 ) ; 2 ) = 1 ; 1 ) ] 
 # 
 # # Calculate Input context
 # 
@@ -328,9 +330,9 @@ Set Variable [ $fmide_parameters ; Value: While([ ¢fmide_parameter_names = $fmi
 Set Variable [ $fmide_url ; Value: $protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & $fmide_parameters ] 
 # 
 If [ not $get_fmide_url ] 
-	If [ $fmide_debug ] 
-		Show Custom Dialog [ $fmide_url ] 
-	End If
+	// If [ $fmide_debug ] 
+		// Show Custom Dialog [ $fmide_url ] 
+	// End If
 	Open URL [ With dialog: Off ; $fmide_url ] 
 End If
 # 

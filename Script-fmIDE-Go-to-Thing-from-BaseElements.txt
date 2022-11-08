@@ -1,0 +1,338 @@
+# fmIDE-Go to Thing in file BaseElements_19_UI
+
+# /##
+# Script fmIDE-Go to Thing - See https://github.com/fmIDE/fmIDE/wiki/'fmIDE-Go-to-Thing'-Script ➜🌍 
+# …from BaseElements - See https://github.com/fmIDE/Script-fmIDE-Go-to-Thing-from-BaseElements ➜🌍 
+# 
+# Jumps to the thing which is currently in focus using the fmIDE 'Name that Thing' API
+# @see  https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API ➜🌍 
+# 
+# @param fmide_debug (boolean) - If true fmIDE pauses to allow you to turn on the debugger
+# @param get_fmide_url (boolean) - If true the url will only be returned and not opened. Note: The fmide url is, in fact, always returned.
+# @param server_address (string) - The address of the server. If empty defaults to `$`. Passing a server address makes it possible to jump to closed files. 
+# @param protocol (string) - The protocol to use (fmp/fmp19/claris). If empty defaults to the best protocoll for the current application.
+# 
+# @returns fmide_url (string) - the fmide url. See https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API-fmp-urls ➜🌍 
+# 
+# @needs fmIDE - https://github.com/fmIDE/fmIDE ➜🌍 
+# 
+# @author https://github.com/mrwatson-de ➜🌍 
+# 
+# 20221108 @mrwatson-de Version 0.3 Fixed #1
+- Add basic parameters including fmide_url return parameter
+- Added TopCallStats
+# 20221104 @mrwatson-de Version 0.2
+- Basic coverage
+# 20221025 @mrwatson-de Version 0.1 Wow! BaseElements also lets you create scripts :D
+# 
+# #/
+# 
+Set Error Capture [ On ]
+# 
+# # Parameters
+# 
+Set Variable [ $_JSP ; Value: Case ( not IsEmpty( Get ( ScriptParameter ) ) ; Get ( ScriptParameter ) ; "{}" ) ] 
+Set Variable [ $fmide_debug ; Value: JSONGetElement( $_JSP ; "fmide_debug" ) ] 
+Set Variable [ $get_fmide_url ; Value: JSONGetElement( $_JSP ; "get_fmide_url" ) ] 
+Set Variable [ $protocol ; Value: JSONGetElement( $_JSP ; "protocol" ) ] 
+Set Variable [ $server_address ; Value: JSONGetElement( $_JSP ; "server_address" ) ] 
+# 
+# 
+# # Parameter defaults
+# 
+Set Variable [ $application_version ; Value: +GetValue ( Substitute ( Get ( ApplicationVersion ) ; "." ; "¶" ) ; 1 ) ] 
+Set Variable [ $server_address ; Value: Case ( not IsEmpty ( $server_address ) ; $server_address ; "$" ) ] 
+Set Variable [ $protocol ; Value: Case(   not IsEmpty( $protocol ) ; $protocol ;   /* Otherwise use the protocol of the current application */   $application_version < 19 ; "fmp" ;   $application_version < 40 ; "fmp" & $application_version ;   "claris"   ) ] 
+Set Variable [ $fmide_debug ; Value: Case( not IsEmpty ( $fmide_debug ) ; $fmide_debug ; Mod( Div( Get ( ActiveModifierKeys ) ; 2 ) ; 2 ) = 1 ; 1 ) ] 
+# 
+# # Calculate Input context
+# 
+Set Variable [ $LayoutTableName ; Value: Get ( LayoutTableName ) ] 
+Set Variable [ $ActiveFieldName ; Value: Case( not IsEmpty ( Get ( ActiveFieldName ) ); Get ( ActiveFieldTableName ) & "::" & Get ( ActiveFieldName ) ) ] 
+Set Variable [ $ActiveTableName ; Value: Get ( ActiveFieldTableName ) ] 
+Set Variable [ $ActiveTableName ; Value: Let( [ vTO = $ActiveTableName ]; Case( /* TARGET FILE */ /* TARGET TABLE */ /* TARGET FIELD */ vTO = "tTbl_tTable_tFld.Summary" ; "tTbl_tField.Summary" ; vTO = "tField_tTable_tFldCalc.inAutoEnter" ; "tField_tField_tFldCalc.inAutoEnter" ; vTO = "tF… ] 
+Set Variable [ $$ActiveTableName ; Value: $ActiveTableName ] 
+# 
+# 
+# # What is our target thing?
+# 
+If [ 0 ] 
+	# 
+	# 
+Else If [ $LayoutTableName = "Report" ] 
+	If [ 0 ] 
+	Else If [ $ActiveTableName = "ReportTopCall" ] 
+		Set Variable [ $file_name ; Value: ReportTopCall::cFile ] 
+		# 
+		Set Variable [ $external_data_source_name ; Value: ReportTopCall EDS::name ] 
+		Set Variable [ $field_name ; Value: ReportTopCall Field::name ] 
+		Set Variable [ $layout_name ; Value: ReportTopCall Layout::name ] 
+		Set Variable [ $menu_name ; Value: ReportTopCall Menu::name ] 
+		Set Variable [ $menu_set_name ; Value: ReportTopCall MenuSet::name ] 
+		Set Variable [ $script_name ; Value: ReportTopCall Script::name ] 
+		Set Variable [ $t_o_name ; Value: ReportTopCall TO::name ] 
+		Set Variable [ $table_name ; Value: ReportTopCall Table::name ] 
+		Set Variable [ $theme_name ; Value: ReportTopCall Theme::name ] 
+		Set Variable [ $value_list_name ; Value: ReportTopCall ValueList::name ] 
+		// # Not yet supported:
+		// Set Variable [ $base_directory_path ; Value: ReportTopCall BaseDirectory::path ] 
+		# 
+	Else If [ $ActiveTableName = "ReportChangeItem" ] 
+		# FIXME BaseElements Diff-Report
+		# 
+	Else
+		# Note BaseElements has no extra error report
+		# 
+	End If
+	# 
+Else If [ $LayoutTableName = "Account" ] 
+	If [ 0 ] 
+		# No Portals
+	Else
+		Set Variable [ $file_name ; Value: Account::File Name ] 
+		Set Variable [ $account_name ; Value: Account::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "MenuSet" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: MenuSet::File Name ] 
+		Set Variable [ $custom_menu_set_name ; Value: MenuSet::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Menu" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Menu::File Name ] 
+		Set Variable [ $custom_menu_name ; Value: Menu::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "MenuItem" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Menu::File Name ] 
+		Set Variable [ $custom_menu_item_name ; Value: MenuItem::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "PrivilegeSet" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: PrivilegeSet::File Name ] 
+		Set Variable [ $privilege_set_name ; Value: PrivilegeSet::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "ExtendedPrivilege" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: ExtendedPrivilege::File Name ] 
+		Set Variable [ $extended_privilege_name ; Value: ExtendedPrivilege::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Relationship" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Relationship::File Name ] 
+		Set Variable [ $relationship_name ; Value: Relationship::Both Names Text ] 
+		Set Variable [ $tor ; Value: Relationship::RightTable name ] 
+		Set Variable [ $to_left ; Value: Relationship::LeftTable name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Theme" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Theme::File Name ] 
+		Set Variable [ $theme_name ; Value: Theme::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "File" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: File::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Table" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Table::File Name ] 
+		Set Variable [ $table_name ; Value: Table::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Field" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Field::File Name ] 
+		Set Variable [ $base_table_name ; Value: Field::BaseTable name ] 
+		Set Variable [ $field_name ; Value: Field::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Calc" ] 
+	# FIXME
+	Set Variable [ $file_name ; Value: Calc::File Name ] 
+	Set Variable [ $type ; Value: Calc::Type ] 
+	If [ not IsEmpty ( Calc::ParentDesc1 ) ] 
+		# Parent 2 = Menu, Layout, Script, Table, …?
+		Set Variable [ $parent1_bits ; Value: Substitute( Calc::ParentDesc1 ; " : " ; "¶" ) ] 
+		Set Variable [ $parent1_element_type ; Value: GetValue( $parent1_bits ; 1 ) ] 
+		Set Variable [ $parent1_element_name ; Value: GetValue( $parent1_bits ; 2 ) ] 
+		Set Variable [ $parent1_element_type_lower_snake_case ; Value: Substitute( Trim( Substitute( $parent1_element_type ; ["A"; " a"]; ["B"; " b"]; ["C"; " c"]; ["D"; " d"]; ["E"; " e"]; ["F"; " f"]; ["G"; " g"]; ["H"; " h"]; ["I"; " i"]; ["J"; " j"]; ["K"; " k"]; ["L"; " l"]; ["M"; " m"]; ["N"; " n"]; ["O"; " o"]; ["P";… ] 
+		Set Variable [ $fmide_thing ; Value: Substitute( $parent1_element_type_lower_snake_case ; ["step"; "script_step"] ) ] 
+		Set Variable [ $reference_type ; Value: Case ( not IsEmpty( FilterValues( $fmide_thing ; "script_step¶menu_item" ) ) ; "number" ; "name" ) ] 
+		Set Variable [ $eval ; Value: "Let($" & $fmide_thing & "_" & $reference_type & "=" & Quote( $parent1_element_name ) & ";0)" ] 
+		Set Variable [ $r ; Value: Evaluate( $eval ) ] 
+	End If
+	If [ not IsEmpty ( Calc::ParentDesc2 ) ] 
+		# Parent 2 = Menu, Layout, Script, Table, …?
+		Set Variable [ $parent2_bits ; Value: Substitute( Calc::ParentDesc2 ; " : " ; "¶" ) ] 
+		Set Variable [ $parent2_element_type ; Value: GetValue( $parent2_bits ; 1 ) ] 
+		Set Variable [ $parent2_element_name ; Value: GetValue( $parent2_bits ; 2 ) ] 
+		If [ 0 ] 
+			// Set Variable [ $script_step_number ; Value: Calc Step.Parent::Position ] 
+			// Set Variable [ $script_step_number ; Value: Calc Step.Parent::Position ] 
+		Else If [ $parent2_element_type = "Object" ] 
+			Set Variable [ $object_name ; Value: Calc Object.Parent::Name ] 
+		Else If [ $parent2_element_type = "EDS" ] 
+			Set Variable [ $external_data_source_name ; Value: Calc EDS.Parent::name ] 
+		Else
+			Set Variable [ $parent2_element_type_lower_snake_case ; Value: Substitute( Trim( Substitute( $parent2_element_type ; ["A"; " a"]; ["B"; " b"]; ["C"; " c"]; ["D"; " d"]; ["E"; " e"]; ["F"; " f"]; ["G"; " g"]; ["H"; " h"]; ["I"; " i"]; ["J"; " j"]; ["K"; " k"]; ["L"; " l"]; ["M"; " m"]; ["N"; " n"]; ["O"; " o"]; ["P";… ] 
+			Set Variable [ $fmide_thing ; Value: Substitute( $parent2_element_type_lower_snake_case ; ["step"; "script_step"] ) ] 
+			Set Variable [ $reference_type ; Value: Case ( not IsEmpty( FilterValues( $fmide_thing ; "script_step¶menu_item" ) ) ; "number" ; "name" ) ] 
+			Set Variable [ $eval ; Value: "Let($" & $fmide_thing & "_" & $reference_type & "=" & Quote( $parent2_element_name ) & ";0)" ] 
+			Set Variable [ $r ; Value: Evaluate( $eval ) ] 
+		End If
+	End If
+	# 
+Else If [ $LayoutTableName = "TO" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: TO::File Name ] 
+		Set Variable [ $table_name ; Value: TO::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Script" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Script::File Name ] 
+		Set Variable [ $script_name ; Value: Script::name ] 
+		Set Variable [ $script_step_number ; Value: Case( Get ( ActivePortalRowNumber ) ; Get ( ActivePortalRowNumber ) ) ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Step" ] 
+	If [ 0 ] 
+		# FIXME for other step types
+	Else
+		Set Variable [ $file_name ; Value: Script::File Name ] 
+		Set Variable [ $script_name ; Value: Script::name ] 
+		Set Variable [ $script_step_number ; Value: Step::cPosition Description ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "ValueList" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: ValueList::File Name ] 
+		Set Variable [ $value_list_name ; Value: ValueList::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Layout" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Layout::File Name ] 
+		Set Variable [ $layout_name ; Value: Layout::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Object" ] 
+	Set Variable [ $file_name ; Value: Object::File Name ] 
+	Set Variable [ $layout_name ; Value: Layout::name ] 
+	Set Variable [ $object_name ; Value: Object::Name ] 
+	# 
+	# Note: BaseElements has no layout parts
+	# 
+Else If [ $LayoutTableName = "CustomFunction" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: CustomFunction::File Name ] 
+		Set Variable [ $custom_function_name ; Value: CustomFunction::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "MenuSet" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: MenuSet::File Name ] 
+		Set Variable [ $custom_menu_set_name ; Value: MenuSet::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "EDS" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: EDS::File Name ] 
+		Set Variable [ $external_data_source_name ; Value: EDS::name ] 
+	End If
+	# 
+Else If [ $LayoutTableName = "Variable" ] 
+	If [ 0 ] 
+	Else If [ $ActiveTableName = "Variable Reference.By" ] 
+		# FIXME - 
+		Set Variable [ $ParentType ; Value: Variable Reference.By::Parent Type ] 
+		# 
+		Set Variable [ $file_name ; Value: Variable Reference.By::File Name ] 
+		Set Variable [ $base_table_name ; Value: Variable Reference.By Field::BaseTable name ] 
+		Set Variable [ $field_name ; Value: Variable Reference.By Field::name ] 
+		Set Variable [ $custom_function_name ; Value: Variable Reference.By CustomFunction::name ] 
+		Set Variable [ $external_data_source_name ; Value: Variable Reference.By EDS::name ] 
+		Set Variable [ $menu_name ; Value: Variable Reference.By Menu::name ] 
+		Set Variable [ $menu_item_number ; Value: Variable Reference.By MenuItem::Position ] 
+		Set Variable [ $object_name ; Value: Variable Reference.By Object::Name ] 
+		Set Variable [ $layout_name ; Value: Variable Reference.By Layout::name ] 
+		Set Variable [ $script_name ; Value: Variable Reference.By Script::name ] 
+		Set Variable [ $script_step_number ; Value: Variable Reference.By Step::Position ] 
+	Else
+	End If
+	# 
+Else If [ $LayoutTableName = "Object" ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Object::File Name ] 
+		Set Variable [ $object_name ; Value: Object::Name ] 
+	End If
+	# 
+	# 
+End If
+# 
+# ^^^^^
+# 
+# # Pass the thing to the fmIDE 'Name that Thing!' API
+# 
+# @see https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API
+# 
+# First remove extension from file name, if any
+Set Variable [ $file_name ; Value: Substitute ( $file_name ; [".fmp12" ; ""] ; [".claris" ; ""] ) ] 
+# 
+// # Method 1. Oldest, most straightforward method
+# 
+// Set Variable [ $protocol_url ; Value: $protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & "&$account_id=" & GetAsURLEncoded ( $account_id ) & "&$account_name=" & GetAsURLEncoded ( $account_name ) & "&$account_number=" & GetAsURLEncoded ( $account_…" ] 
+# 
+// # Method 2. Old method using placeholders which leads to too much junk in the fmpurl
+# 
+// Set Variable [ $url_template ; Value: "{{$protocol}}://{{$server_address}}/{{%$file_name%}}" & "?script=fmIDE" & "&$account_id={{%$account_id%}}" & "&$account_name={{%$account_name%}}" & "&$account_number={{%$account_number%}}" & "&$base_table_id={{%$base_table_id%}}" & "&$base_table_name=…" ] 
+// Insert Text [ Select ; Target: $url_template ; “{{$protocol}}://{{$server_address}}/{{%$file_name%}}?script=fmIDE &$account_id={{%$account_id%}} &$account_name={{%$account_name%}} &$account_number={{%$account_number%}} &$base_table_id={{%$base_table_id%}} &$base_table_name={{%$base_table_name%}} &$base_table_number={{%$base_table_number%}} &$custom_function_id={{%$custom_function_id%}} &$custom_function_name={{%$custom_function_name%}} &$custom_function_number={{%$custom_function_number%}} &$custom_menu_id={{%$custom_menu_id%}} &$custom_menu_item_id={{%$custom_menu_item_id%}} &$custom_menu_item_name={{%$custom_menu_item_name%}} &$custom_menu_item_number={{%$custom_menu_item_number%}} &$custom_menu_name={{%$custom_menu_name%}} &$custom_menu_number={{%$custom_menu_number%}} &$custom_menu_set_id={{%$custom_menu_set_id%}} &$custom_menu_set_name={{%$custom_menu_set_name%}} &$custom_menu_set_number={{%$custom_menu_set_number%}} &$extended_privilege_id={{%$extended_privilege_id%}} &$extended_privilege_name={{%$extended_privilege_name%}} &$extended_privilege_number={{%$extended_privilege_number%}} &$external_data_source_id={{%$external_data_source_id%}} &$external_data_source_name={{%$external_data_source_name%}} &$external_data_source_number={{%$external_data_source_number%}} &$field_id={{%$field_id%}} &$field_name={{%$field_name%}} &$field_number={{%$field_number%}} &$file_name={{%$file_name%}} &$layout_id={{%$layout_id%}} &$layout_name={{%$layout_name%}} &$layout_number={{%$layout_number%}} &$object_id={{%$object_id%}} &$object_name={{%$object_name%}} &$object_number={{%$object_number%}} &$privilege_set_id={{%$privilege_set_id%}} &$privilege_set_name={{%$privilege_set_name%}} &$privilege_set_number={{%$privilege_set_number%}} &$script_id={{%$script_id%}} &$script_name={{%$script_name%}} &$script_name_stub={{%$script_name_stub%}} &$script_number={{%$script_number%}} &$script_step_id={{%$script_step_id%}} &$script_step_name={{%$script_step_name%}} &$script_step_number={{%$script_step_number%}} &$script_step_number_to={{%$script_step_number_to%}} &$table_id={{%$table_id%}} &$table_name={{%$table_name%}} &$table_number={{%$table_number%}} &$theme_id={{%$theme_id%}} &$theme_name={{%$theme_name%}} &$theme_number={{%$theme_number%}} &$t_o_id={{%$t_o_id%}} &$t_o_name={{%$t_o_name%}} &$t_o_number={{%$t_o_number%}} &$value_list_id={{%$value_list_id%}} &$value_list_name={{%$value_list_name%}} &$value_list_number={{%$value_list_number%}} ” ] 
+// Set Variable [ $protocol_url ; Value: Substitute ( $url_template ; ["{{$protocol}}" ; $protocol] ; ["{{$server_address}}" ; $server_address] ; ["{{%$file_name%}}" ; GetAsURLEncoded ( $file_name )] ; ["{{%$account_id%}}" ; GetAsURLEncoded ( $account_id )] ; ["{{%$account_name%}}" ; GetAsURLEn… ] 
+# 
+// # Method 3. More complicated calc, but it produces a simpler url -> better for debugging
+# 
+// Set Variable [ $protocol_url ; Value: $protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & Case( not IsEmpty ( $account_id ) ; "&$account_id=" & GetAsURLEncoded ( $account_id ) ) & Case( not IsEmpty ( $account_name ) ; "&$account_name=" & GetAsURLE…" ] 
+# 
+# Method 4. using While to automatically generate the parameters
+# Note: not all parameters are supported - yet. Please check the documentation.
+# 
+Insert Text [ Select ; Target: $fmide_parameter_names ; “account_name base_table_name custom_function_name custom_menu_item_name custom_menu_name custom_menu_set_name extended_privilege_name external_data_source_name field_name file_name layout_field_name layout_name layout_part_name object_name privilege_set_name script_name script_name_stub script_step_name table_name theme_name t_o_name value_list_name account_number base_table_number custom_function_number custom_menu_item_number custom_menu_number custom_menu_set_number extended_privilege_number external_data_source_number field_number layout_field_number layout_number layout_part_number object_number privilege_set_number script_number script_step_number script_step_number_to table_number theme_number t_o_number value_list_number account_id base_table_id custom_function_id custom_menu_id custom_menu_item_id custom_menu_set_id extended_privilege_id external_data_source_id field_id layout_field_id layout_id layout_part_id object_id privilege_set_id script_id script_step_id table_id theme_id t_o_id value_list_id account_uuid base_table_uuid custom_function_uuid custom_menu_uuid custom_menu_item_uuid custom_menu_set_uuid extended_privilege_uuid external_data_source_uuid field_uuid layout_field_uuid layout_uuid layout_part_uuid object_uuid privilege_set_uuid script_uuid script_step_uuid table_uuid theme_uuid t_o_uuid value_list_uuid fmide_debug” ] 
+Set Variable [ $fmide_parameters ; Value: While([ ¢fmide_parameter_names = $fmide_parameter_names ; ¢result = "" ; ¢i = 1; ¢n = ValueCount( ¢fmide_parameter_names ) ] ; ¢i <= ¢n ; [ ¢fmide_parameter_name = GetValue( ¢fmide_parameter_names ; ¢i ) ; ¢fmide_scriptvar_name = "$" & ¢fmide_paramet… ] 
+Set Variable [ $fmide_url ; Value: $protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & $fmide_parameters ] 
+# 
+If [ not $get_fmide_url ] 
+	If [ $fmide_debug ] 
+		Show Custom Dialog [ $fmide_url ] 
+	End If
+	Open URL [ With dialog: Off ; $fmide_url ] 
+End If
+# 
+Exit Script [ Text Result: JSONSetElement ( "{}" ; "fmide_url" ; $fmide_url ; JSONString ) ] 
+# 

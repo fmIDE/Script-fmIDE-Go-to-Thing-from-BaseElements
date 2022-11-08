@@ -30,11 +30,11 @@ In one click it jumps from the thing you are currently looking at in BaseElement
      
 
 3. Prepare BaseElements for fmIDE-Integration
-   - Create a new script in BaseElements named "fmIDE-Go to Thing from BaseElements"
+   - Create a new script in BaseElements named `fmIDE-Go to Thing`
      - (or  delete the existing script's contents if you are updating)
    - Paste the steps into it
-     - Copy the [fmxmlsnippet.xml](fmxmlsnippet.xml) of the script steps (**in development** - coming shortly!)
-     - Convert the xml to FileMaker objects with any FM-XML conversion tool like fmCheckMate
+     - Copy the xml contents of the [fmxmlsnippet.xml](fmxmlsnippet.xml) script steps file
+     - Convert the xml to FileMaker objects with any FM-XML conversion tool like [fmWorkMate's fmCheckMate](https://github.com/mrwatson-de/fmWorkMate/releases/latest), or [fmAutoMate's PaXte function](https://github.com/mrwatson-de/fmAutoMate/releases/latest), or whatever your favourite clipboard conversion tool is.
      - Paste the steps into the script.
 
 4. Perform a BaseElements analysis of your database
@@ -43,7 +43,8 @@ In one click it jumps from the thing you are currently looking at in BaseElement
 
 5. Click, 💥 Bang! 👀 Goggle!
    - Navigate to any record in the analysis in BaseElements, for example to a script step
-   - Press the shortcut key to run the "fmIDE-Go to Thing from BaseElements" script
+   - Run the "fmIDE-Go to Thing" script
+     - or press the shortcut key
    - You suddenly find yourself (more or less) looking at that thing in FileMaker, for example in the Script Workspace editing the script at exactly the script step.
 
 Cool? Find out more about [fmIDE](https://github.com/fmIDE/fmIDE/wiki)

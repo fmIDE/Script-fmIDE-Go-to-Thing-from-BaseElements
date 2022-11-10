@@ -1,25 +1,32 @@
 # fmIDE-Go to Thing in file BaseElements_19_UI
 
 # /##
-# Script fmIDE-Go to Thing - See https://github.com/fmIDE/fmIDE/wiki/'fmIDE-Go-to-Thing'-Script ➜🌍 
-# …from BaseElements - See https://github.com/fmIDE/Script-fmIDE-Go-to-Thing-from-BaseElements ➜🌍 
+# Script fmIDE-Go to Thing - See https://github.com/fmIDE/fmIDE/wiki/'fmIDE-Go-to-Thing'-Script
+# …from BaseElements - See https://github.com/fmIDE/Script-fmIDE-Go-to-Thing-from-BaseElements
 # 
 # Jumps to the thing which is currently in focus using the fmIDE 'Name that Thing' API
-# @see  https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API ➜🌍 
+# @see  https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API
 # 
 # @param fmide_debug (boolean) - If true fmIDE pauses to allow you to turn on the debugger
 # @param get_fmide_url (boolean) - If true the url will only be returned and not opened. Note: The fmide url is, in fact, always returned.
 # @param server_address (string) - The address of the server. If empty defaults to `$`. Passing a server address makes it possible to jump to closed files. 
 # @param protocol (string) - The protocol to use (fmp/fmp19/claris). If empty defaults to the best protocoll for the current application.
 # 
-# @returns fmide_url (string) - the fmide url. See https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API-fmp-urls ➜🌍 
+# @returns fmide_url (string) - the fmide url. See https://github.com/fmIDE/fmIDE/wiki/fmIDE-'Name-that-Thing'-API-fmp-urls
 # 
-# @needs fmIDE - https://github.com/fmIDE/fmIDE ➜🌍 
+# @needs fmIDE - https://github.com/fmIDE/fmIDE
 # 
-# @author https://github.com/mrwatson-de ➜🌍 
+# @author https://github.com/mrwatson-de
 # 
+# 20221108 @mrwatson-de Version 0.4
+- Added support for ValueLists REFERENCED BY
+- Added support for Variables REFERENCED BY
+- Pass `object_bounds_*` parameters (note: not yet implemented in fmIDE)
+- Added debugging back in FOR NOW
+  - CAPS-LOCK -> fmide_debug = true -> Shows fmp-url & fmIDE offers pause for debugging
+- Removed duplicate code
 # 20221108 @mrwatson-de Version 0.3.1
-- Comment out the extra devbugging stuff
+- Comment out the extra debugging stuff
 # 20221108 @mrwatson-de Version 0.3 Fixed #1
 - Add basic parameters including fmide_url return parameter
 - Added TopCallStats
@@ -45,7 +52,7 @@ Set Variable [ $server_address ; Value: JSONGetElement( $_JSP ; "server_address"
 Set Variable [ $application_version ; Value: +GetValue ( Substitute ( Get ( ApplicationVersion ) ; "." ; "¶" ) ; 1 ) ] 
 Set Variable [ $server_address ; Value: Case ( not IsEmpty ( $server_address ) ; $server_address ; "$" ) ] 
 Set Variable [ $protocol ; Value: Case(   not IsEmpty( $protocol ) ; $protocol ;   /* Otherwise use the protocol of the current application */   $application_version < 19 ; "fmp" ;   $application_version < 40 ; "fmp" & $application_version ;   "claris"   ) ] 
-// Set Variable [ $fmide_debug ; Value: Case( not IsEmpty ( $fmide_debug ) ; $fmide_debug ; Mod( Div( Get ( ActiveModifierKeys ) ; 2 ) ; 2 ) = 1 ; 1 ) ] 
+Set Variable [ $fmide_debug ; Value: Case( not IsEmpty ( $fmide_debug ) ; $fmide_debug ; Mod( Div( Get ( ActiveModifierKeys ) ; 2 ) ; 2 ) = 1 ; 1 ) ] 
 # 
 # # Calculate Input context
 # 
@@ -192,6 +199,11 @@ Else If [ $LayoutTableName = "Calc" ]
 			// Set Variable [ $script_step_number ; Value: Calc Step.Parent::Position ] 
 		Else If [ $parent2_element_type = "Object" ] 
 			Set Variable [ $object_name ; Value: Calc Object.Parent::Name ] 
+			Set Variable [ $object_bounds_left ; Value: Calc Object.Parent::Bounds left ] 
+			Set Variable [ $object_bounds_top ; Value: Calc Object.Parent::Bounds top ] 
+			Set Variable [ $object_bounds_right ; Value: Calc Object.Parent::Bounds right ] 
+			Set Variable [ $object_bounds_bottom ; Value: Calc Object.Parent::Bounds bottom ] 
+			Set Variable [ $object_bounds_rotation ; Value: Calc Object.Parent::rotation ] 
 		Else If [ $parent2_element_type = "EDS" ] 
 			Set Variable [ $external_data_source_name ; Value: Calc EDS.Parent::name ] 
 		Else
@@ -229,6 +241,21 @@ Else If [ $LayoutTableName = "Step" ]
 	# 
 Else If [ $LayoutTableName = "ValueList" ] 
 	If [ 0 ] 
+	Else If [ $ActiveTableName = "ValueList Reference.By" ] 
+		Set Variable [ $ParentType ; Value: ValueList Reference.By::Parent Type ] 
+		# 
+		Set Variable [ $file_name ; Value: ValueList Reference.By::File Name ] 
+		Set Variable [ $base_table_name ; Value: ValueList Reference.By Field::BaseTable name ] 
+		Set Variable [ $field_name ; Value: ValueList Reference.By Field::name ] 
+		Set Variable [ $object_name ; Value: ValueList Reference.By Object::Name ] 
+		Set Variable [ $object_bounds_left ; Value: ValueList Reference.By Object::Bounds left ] 
+		Set Variable [ $object_bounds_top ; Value: ValueList Reference.By Object::Bounds top ] 
+		Set Variable [ $object_bounds_right ; Value: ValueList Reference.By Object::Bounds right ] 
+		Set Variable [ $object_bounds_bottom ; Value: ValueList Reference.By Object::Bounds bottom ] 
+		Set Variable [ $object_bounds_rotation ; Value: ValueList Reference.By Object::rotation ] 
+		Set Variable [ $layout_name ; Value: ValueList Reference.By Layout::name ] 
+		Set Variable [ $script_name ; Value: ValueList Reference.By Script::name ] 
+		Set Variable [ $script_step_number ; Value: ValueList Reference.By Step::Position ] 
 	Else
 		Set Variable [ $file_name ; Value: ValueList::File Name ] 
 		Set Variable [ $value_list_name ; Value: ValueList::name ] 
@@ -242,9 +269,21 @@ Else If [ $LayoutTableName = "Layout" ]
 	End If
 	# 
 Else If [ $LayoutTableName = "Object" ] 
-	Set Variable [ $file_name ; Value: Object::File Name ] 
-	Set Variable [ $layout_name ; Value: Layout::name ] 
-	Set Variable [ $object_name ; Value: Object::Name ] 
+	If [ 0 ] 
+	Else
+		Set Variable [ $file_name ; Value: Object::File Name ] 
+		Set Variable [ $layout_name ; Value: Layout::name ] 
+		Set Variable [ $layout_field_name ; Value: Case( not IsEmpty( Object Reference.Field TO::name ) ; Object Reference.Field TO::name & "::" & Object Reference.Field Field::name ) ] 
+		Set Variable [ $object_name ; Value: Object::Name ] 
+		Set Variable [ $object_bounds_left ; Value: Object::Bounds left ] 
+		Set Variable [ $object_bounds_top ; Value: Object::Bounds top ] 
+		Set Variable [ $object_bounds_right ; Value: Object::Bounds right ] 
+		Set Variable [ $object_bounds_bottom ; Value: Object::Bounds bottom ] 
+		Set Variable [ $object_bounds_rotation ; Value: Object::rotation ] 
+		// If [ Object Reference.Used::RefToType = "Field" ] 
+			// Set Variable [ $layout_field_name ; Value: Object Reference.Used::RefToName ] 
+		// End If
+	End If
 	# 
 	# Note: BaseElements has no layout parts
 	# 
@@ -253,13 +292,6 @@ Else If [ $LayoutTableName = "CustomFunction" ]
 	Else
 		Set Variable [ $file_name ; Value: CustomFunction::File Name ] 
 		Set Variable [ $custom_function_name ; Value: CustomFunction::name ] 
-	End If
-	# 
-Else If [ $LayoutTableName = "MenuSet" ] 
-	If [ 0 ] 
-	Else
-		Set Variable [ $file_name ; Value: MenuSet::File Name ] 
-		Set Variable [ $custom_menu_set_name ; Value: MenuSet::name ] 
 	End If
 	# 
 Else If [ $LayoutTableName = "EDS" ] 
@@ -272,7 +304,6 @@ Else If [ $LayoutTableName = "EDS" ]
 Else If [ $LayoutTableName = "Variable" ] 
 	If [ 0 ] 
 	Else If [ $ActiveTableName = "Variable Reference.By" ] 
-		# FIXME - 
 		Set Variable [ $ParentType ; Value: Variable Reference.By::Parent Type ] 
 		# 
 		Set Variable [ $file_name ; Value: Variable Reference.By::File Name ] 
@@ -283,19 +314,16 @@ Else If [ $LayoutTableName = "Variable" ]
 		Set Variable [ $menu_name ; Value: Variable Reference.By Menu::name ] 
 		Set Variable [ $menu_item_number ; Value: Variable Reference.By MenuItem::Position ] 
 		Set Variable [ $object_name ; Value: Variable Reference.By Object::Name ] 
+		Set Variable [ $object_bounds_left ; Value: Variable Reference.By Object::Bounds left ] 
+		Set Variable [ $object_bounds_top ; Value: Variable Reference.By Object::Bounds top ] 
+		Set Variable [ $object_bounds_right ; Value: Variable Reference.By Object::Bounds right ] 
+		Set Variable [ $object_bounds_bottom ; Value: Variable Reference.By Object::Bounds bottom ] 
+		Set Variable [ $object_bounds_rotation ; Value: Variable Reference.By Object::rotation ] 
 		Set Variable [ $layout_name ; Value: Variable Reference.By Layout::name ] 
 		Set Variable [ $script_name ; Value: Variable Reference.By Script::name ] 
 		Set Variable [ $script_step_number ; Value: Variable Reference.By Step::Position ] 
 	Else
 	End If
-	# 
-Else If [ $LayoutTableName = "Object" ] 
-	If [ 0 ] 
-	Else
-		Set Variable [ $file_name ; Value: Object::File Name ] 
-		Set Variable [ $object_name ; Value: Object::Name ] 
-	End If
-	# 
 	# 
 End If
 # 
@@ -325,14 +353,14 @@ Set Variable [ $file_name ; Value: Substitute ( $file_name ; [".fmp12" ; ""] ; [
 # Method 4. using While to automatically generate the parameters
 # Note: not all parameters are supported - yet. Please check the documentation.
 # 
-Insert Text [ Select ; Target: $fmide_parameter_names ; “account_name base_table_name custom_function_name custom_menu_item_name custom_menu_name custom_menu_set_name extended_privilege_name external_data_source_name field_name file_name layout_field_name layout_name layout_part_name object_name privilege_set_name script_name script_name_stub script_step_name table_name theme_name t_o_name value_list_name account_number base_table_number custom_function_number custom_menu_item_number custom_menu_number custom_menu_set_number extended_privilege_number external_data_source_number field_number layout_field_number layout_number layout_part_number object_number privilege_set_number script_number script_step_number script_step_number_to table_number theme_number t_o_number value_list_number account_id base_table_id custom_function_id custom_menu_id custom_menu_item_id custom_menu_set_id extended_privilege_id external_data_source_id field_id layout_field_id layout_id layout_part_id object_id privilege_set_id script_id script_step_id table_id theme_id t_o_id value_list_id account_uuid base_table_uuid custom_function_uuid custom_menu_uuid custom_menu_item_uuid custom_menu_set_uuid extended_privilege_uuid external_data_source_uuid field_uuid layout_field_uuid layout_uuid layout_part_uuid object_uuid privilege_set_uuid script_uuid script_step_uuid table_uuid theme_uuid t_o_uuid value_list_uuid fmide_debug” ] 
+Insert Text [ Select ; Target: $fmide_parameter_names ; “account_name base_table_name custom_function_name custom_menu_item_name custom_menu_name custom_menu_set_name extended_privilege_name external_data_source_name field_name file_name layout_field_name layout_name layout_part_name object_name privilege_set_name script_name script_name_stub script_step_name table_name theme_name t_o_name value_list_name account_number base_table_number custom_function_number custom_menu_item_number custom_menu_number custom_menu_set_number extended_privilege_number external_data_source_number field_number layout_field_number layout_number layout_part_number object_number privilege_set_number script_number script_step_number script_step_number_to table_number theme_number t_o_number value_list_number account_id base_table_id custom_function_id custom_menu_id custom_menu_item_id custom_menu_set_id extended_privilege_id external_data_source_id field_id layout_field_id layout_id layout_part_id object_id privilege_set_id script_id script_step_id table_id theme_id t_o_id value_list_id account_uuid base_table_uuid custom_function_uuid custom_menu_uuid custom_menu_item_uuid custom_menu_set_uuid extended_privilege_uuid external_data_source_uuid field_uuid layout_field_uuid layout_uuid layout_part_uuid object_uuid privilege_set_uuid script_uuid script_step_uuid table_uuid theme_uuid t_o_uuid value_list_uuid object_bounds_bottom object_bounds_left object_bounds_right object_bounds_rotation object_bounds_top fmide_debug” ] 
 Set Variable [ $fmide_parameters ; Value: While([ ¢fmide_parameter_names = $fmide_parameter_names ; ¢result = "" ; ¢i = 1; ¢n = ValueCount( ¢fmide_parameter_names ) ] ; ¢i <= ¢n ; [ ¢fmide_parameter_name = GetValue( ¢fmide_parameter_names ; ¢i ) ; ¢fmide_scriptvar_name = "$" & ¢fmide_paramet… ] 
 Set Variable [ $fmide_url ; Value: $protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & $fmide_parameters ] 
 # 
 If [ not $get_fmide_url ] 
-	// If [ $fmide_debug ] 
-		// Show Custom Dialog [ $fmide_url ] 
-	// End If
+	If [ $fmide_debug ] 
+		Show Custom Dialog [ $fmide_url ] 
+	End If
 	Open URL [ With dialog: Off ; $fmide_url ] 
 End If
 # 

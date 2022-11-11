@@ -801,4 +801,47 @@ Case( not IsEmpty ( $theme_number ) ; "&$theme_number=" & GetAsURLEncoded ( $the
 Case( not IsEmpty ( $t_o_id ) ; "&$t_o_id=" & GetAsURLEncoded ( $t_o_id ) ) &
 Case( not IsEmpty ( $t_o_name ) ; "&$t_o_name=" & GetAsURLEncoded ( $t_o_name ) ) &
 Case( not IsEmpty ( $t_o_number ) ; "&$t_o_number=" & GetAsURLEncoded ( $t_o_number ) ) &
-Case( not IsEmp
+Case( not IsEmpty ( $value_list_id ) ; "&$value_list_id=" & GetAsURLEncoded ( $value_list_id ) ) &
+Case( not IsEmpty ( $value_list_name ) ; "&$value_list_name=" & GetAsURLEncoded ( $value_list_name ) ) &
+Case( not IsEmpty ( $value_list_number ) ; "&$value_list_number=" & GetAsURLEncoded ( $value_list_number ) ) &
+""]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$protocol_url</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>Method 4. using While to automatically generate the parameters</Text></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>Note: not all parameters are supported - yet. Please check the documentation.</Text></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="61" name="Insert Text"><SelectAll state="True"></SelectAll><Text>account_name&#13;base_table_name&#13;custom_function_name&#13;custom_menu_item_name&#13;custom_menu_name&#13;custom_menu_set_name&#13;extended_privilege_name&#13;external_data_source_name&#13;field_name&#13;file_name&#13;layout_field_name&#13;layout_name&#13;layout_part_name&#13;object_name&#13;privilege_set_name&#13;script_name&#13;script_name_stub&#13;script_step_name&#13;table_name&#13;theme_name&#13;t_o_name&#13;value_list_name&#13;&#13;account_number&#13;base_table_number&#13;custom_function_number&#13;custom_menu_item_number&#13;custom_menu_number&#13;custom_menu_set_number&#13;extended_privilege_number&#13;external_data_source_number&#13;field_number&#13;layout_field_number&#13;layout_number&#13;layout_part_number&#13;object_number&#13;privilege_set_number&#13;script_number&#13;script_step_number&#13;script_step_number_to&#13;table_number&#13;theme_number&#13;t_o_number&#13;value_list_number&#13;&#13;account_id&#13;base_table_id&#13;custom_function_id&#13;custom_menu_id&#13;custom_menu_item_id&#13;custom_menu_set_id&#13;extended_privilege_id&#13;external_data_source_id&#13;field_id&#13;layout_field_id&#13;layout_id&#13;layout_part_id&#13;object_id&#13;privilege_set_id&#13;script_id&#13;script_step_id&#13;table_id&#13;theme_id&#13;t_o_id&#13;value_list_id&#13;&#13;account_uuid&#13;base_table_uuid&#13;custom_function_uuid&#13;custom_menu_uuid&#13;custom_menu_item_uuid&#13;custom_menu_set_uuid&#13;extended_privilege_uuid&#13;external_data_source_uuid&#13;field_uuid&#13;layout_field_uuid&#13;layout_uuid&#13;layout_part_uuid&#13;object_uuid&#13;privilege_set_uuid&#13;script_uuid&#13;script_step_uuid&#13;table_uuid&#13;theme_uuid&#13;t_o_uuid&#13;value_list_uuid&#13;&#13;object_bounds_bottom&#13;object_bounds_left&#13;object_bounds_right&#13;object_bounds_rotation&#13;object_bounds_top&#13;object_type&#13;&#13;fmide_debug</Text><Field>$fmide_parameter_names</Field></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[While([
+
+¢fmide_parameter_names = $fmide_parameter_names ;
+
+¢result = "" ;
+¢i = 1;
+¢n = ValueCount( ¢fmide_parameter_names )
+
+] ; ¢i <= ¢n ; [
+
+¢fmide_parameter_name = GetValue( ¢fmide_parameter_names ; ¢i ) ;
+¢fmide_scriptvar_name = "$" & ¢fmide_parameter_name ;
+¢fmide_scriptvar_value = Evaluate( ¢fmide_scriptvar_name );
+
+¢result = ¢result & Case( not IsEmpty( ¢fmide_scriptvar_value ) ; "&" & ¢fmide_scriptvar_name & "=" & GetAsURLEncoded( ¢fmide_scriptvar_value ) ) ;
+
+¢i = ¢i + 1
+
+];
+
+¢result
+
+)]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$fmide_parameters</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[$protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & $fmide_parameters]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$fmide_url</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="68" name="If"><Calculation><![CDATA[not $get_fmide_url]]></Calculation></Step>
+		<Step enable="True" id="68" name="If"><Calculation><![CDATA[$fmide_debug]]></Calculation></Step>
+		<Step enable="True" id="87" name="Show Custom Dialog"><Message><Calculation><![CDATA[$fmide_url]]></Calculation></Message><Buttons><Button CommitState="True"><Calculation><![CDATA["OK"]]></Calculation></Button><Button CommitState="False"></Button><Button CommitState="False"></Button></Buttons></Step>
+		<Step enable="True" id="70" name="End If"></Step>
+		<Step enable="True" id="111" name="Open URL"><NoInteract state="True"></NoInteract><Calculation><![CDATA[$fmide_url]]></Calculation></Step>
+		<Step enable="True" id="70" name="End If"></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="103" name="Exit Script"><Calculation><![CDATA[JSONSetElement ( "{}" ; "fmide_url" ; $fmide_url ; JSONString )]]></Calculation></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+</fmxmlsnippet>

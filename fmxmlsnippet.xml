@@ -17,6 +17,7 @@
 		<Step enable="True" id="89" name="# (comment)"></Step>
 		<Step enable="True" id="89" name="# (comment)"><Text>@author https://github.com/mrwatson-de</Text></Step>
 		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>20221111 @mrwatson-de Version 0.5&#13;- Added support for Step Parent</Text></Step>
 		<Step enable="True" id="89" name="# (comment)"><Text>20221108 @mrwatson-de Version 0.4&#13;- Added support for ValueLists REFERENCED BY&#13;- Added support for Variables REFERENCED BY&#13;- Pass `object_bounds_*` parameters (note: not yet implemented in fmIDE)&#13;- Added debugging back in FOR NOW&#13;  - CAPS-LOCK -&gt; fmide_debug = true -&gt; Shows fmp-url &amp; fmIDE offers pause for debugging&#13;- Removed duplicate code</Text></Step>
 		<Step enable="True" id="89" name="# (comment)"><Text>20221108 @mrwatson-de Version 0.3.1&#13;- Comment out the extra debugging stuff</Text></Step>
 		<Step enable="True" id="89" name="# (comment)"><Text>20221108 @mrwatson-de Version 0.3 Fixed #1&#13;- Add basic parameters including fmide_url return parameter&#13;- Added TopCallStats</Text></Step>
@@ -404,12 +405,54 @@ not IsEmpty( FilterValues( $fmide_thing ; "script_step¶menu_item" ) ) ; "number
 		<Step enable="True" id="70" name="End If"></Step>
 		<Step enable="True" id="89" name="# (comment)"></Step>
 		<Step enable="True" id="125" name="Else If"><Calculation><![CDATA[$LayoutTableName = "Step"]]></Calculation></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step::Type]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$StepType</Name></Step>
 		<Step enable="True" id="68" name="If"><Calculation><![CDATA[0]]></Calculation></Step>
-		<Step enable="True" id="89" name="# (comment)"><Text>FIXME for other step types</Text></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="125" name="Else If"><Calculation><![CDATA[$ActiveTableName = "Step Reference.Used"]]></Calculation></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used::Parent Type]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$ParentType</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used::File Name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$file_name</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used CustomFunction::name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$custom_function_name</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used EDS::name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$external_data_source_name</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used Field::name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$field_name</Name></Step>
+		<Step enable="True" id="68" name="If"><Calculation><![CDATA[not IsEmpty ( $field_name )]]></Calculation></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>Field&apos;s Base table could be in a different file</Text></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used Field::BaseTable name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$base_table_name</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used Field::File Name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$file_name</Name></Step>
 		<Step enable="True" id="69" name="Else"></Step>
-		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Script::File Name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$file_name</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>If no field, then maybe a TO From GtRR?</Text></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used TO::name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$table_name</Name></Step>
+		<Step enable="True" id="70" name="End If"></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used PrivilegeSet::name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$privilege_set_name</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>future expansion?</Text></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Reference.Used Plugin::Name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$plugin_name</Name></Step>
+		<Step enable="True" id="69" name="Else"></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step::File Name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$file_name</Name></Step>
+		<Step enable="True" id="68" name="If"><Calculation><![CDATA[$StepType = "Step"]]></Calculation></Step>
 		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Script::name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$script_name</Name></Step>
 		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step::cPosition Description]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$script_step_number</Name></Step>
+		<Step enable="True" id="125" name="Else If"><Calculation><![CDATA[$StepType = "Button"]]></Calculation></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::Layout name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$layout_name</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::Name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_name</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::Bounds top]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_bounds_top</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::Bounds left]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_bounds_left</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::Bounds right]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_bounds_right</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::Bounds bottom]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_bounds_bottom</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step Object.Parent::rotation]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_bounds_rotation</Name></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Substitute ( Step Object.Parent::Type ; 
+["Bar" ; " Bar" ];
+["Segment" ; " " ]
+)]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$object_type</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="125" name="Else If"><Calculation><![CDATA[$StepType = "MenuItem"]]></Calculation></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step::CustomMenu name]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$custom_menu_name</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"><Text>FIXME TESTME</Text></Step>
+		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[Step::cPosition Description]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$custom_menu_item_number</Name></Step>
+		<Step enable="True" id="89" name="# (comment)"></Step>
+		<Step enable="True" id="70" name="End If"></Step>
 		<Step enable="True" id="70" name="End If"></Step>
 		<Step enable="True" id="89" name="# (comment)"></Step>
 		<Step enable="True" id="125" name="Else If"><Calculation><![CDATA[$LayoutTableName = "ValueList"]]></Calculation></Step>
@@ -758,47 +801,4 @@ Case( not IsEmpty ( $theme_number ) ; "&$theme_number=" & GetAsURLEncoded ( $the
 Case( not IsEmpty ( $t_o_id ) ; "&$t_o_id=" & GetAsURLEncoded ( $t_o_id ) ) &
 Case( not IsEmpty ( $t_o_name ) ; "&$t_o_name=" & GetAsURLEncoded ( $t_o_name ) ) &
 Case( not IsEmpty ( $t_o_number ) ; "&$t_o_number=" & GetAsURLEncoded ( $t_o_number ) ) &
-Case( not IsEmpty ( $value_list_id ) ; "&$value_list_id=" & GetAsURLEncoded ( $value_list_id ) ) &
-Case( not IsEmpty ( $value_list_name ) ; "&$value_list_name=" & GetAsURLEncoded ( $value_list_name ) ) &
-Case( not IsEmpty ( $value_list_number ) ; "&$value_list_number=" & GetAsURLEncoded ( $value_list_number ) ) &
-""]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$protocol_url</Name></Step>
-		<Step enable="True" id="89" name="# (comment)"></Step>
-		<Step enable="True" id="89" name="# (comment)"><Text>Method 4. using While to automatically generate the parameters</Text></Step>
-		<Step enable="True" id="89" name="# (comment)"><Text>Note: not all parameters are supported - yet. Please check the documentation.</Text></Step>
-		<Step enable="True" id="89" name="# (comment)"></Step>
-		<Step enable="True" id="61" name="Insert Text"><SelectAll state="True"></SelectAll><Text>account_name&#13;base_table_name&#13;custom_function_name&#13;custom_menu_item_name&#13;custom_menu_name&#13;custom_menu_set_name&#13;extended_privilege_name&#13;external_data_source_name&#13;field_name&#13;file_name&#13;layout_field_name&#13;layout_name&#13;layout_part_name&#13;object_name&#13;privilege_set_name&#13;script_name&#13;script_name_stub&#13;script_step_name&#13;table_name&#13;theme_name&#13;t_o_name&#13;value_list_name&#13;&#13;account_number&#13;base_table_number&#13;custom_function_number&#13;custom_menu_item_number&#13;custom_menu_number&#13;custom_menu_set_number&#13;extended_privilege_number&#13;external_data_source_number&#13;field_number&#13;layout_field_number&#13;layout_number&#13;layout_part_number&#13;object_number&#13;privilege_set_number&#13;script_number&#13;script_step_number&#13;script_step_number_to&#13;table_number&#13;theme_number&#13;t_o_number&#13;value_list_number&#13;&#13;account_id&#13;base_table_id&#13;custom_function_id&#13;custom_menu_id&#13;custom_menu_item_id&#13;custom_menu_set_id&#13;extended_privilege_id&#13;external_data_source_id&#13;field_id&#13;layout_field_id&#13;layout_id&#13;layout_part_id&#13;object_id&#13;privilege_set_id&#13;script_id&#13;script_step_id&#13;table_id&#13;theme_id&#13;t_o_id&#13;value_list_id&#13;&#13;account_uuid&#13;base_table_uuid&#13;custom_function_uuid&#13;custom_menu_uuid&#13;custom_menu_item_uuid&#13;custom_menu_set_uuid&#13;extended_privilege_uuid&#13;external_data_source_uuid&#13;field_uuid&#13;layout_field_uuid&#13;layout_uuid&#13;layout_part_uuid&#13;object_uuid&#13;privilege_set_uuid&#13;script_uuid&#13;script_step_uuid&#13;table_uuid&#13;theme_uuid&#13;t_o_uuid&#13;value_list_uuid&#13;&#13;object_bounds_bottom&#13;object_bounds_left&#13;object_bounds_right&#13;object_bounds_rotation&#13;object_bounds_top&#13;&#13;fmide_debug</Text><Field>$fmide_parameter_names</Field></Step>
-		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[While([
-
-¢fmide_parameter_names = $fmide_parameter_names ;
-
-¢result = "" ;
-¢i = 1;
-¢n = ValueCount( ¢fmide_parameter_names )
-
-] ; ¢i <= ¢n ; [
-
-¢fmide_parameter_name = GetValue( ¢fmide_parameter_names ; ¢i ) ;
-¢fmide_scriptvar_name = "$" & ¢fmide_parameter_name ;
-¢fmide_scriptvar_value = Evaluate( ¢fmide_scriptvar_name );
-
-¢result = ¢result & Case( not IsEmpty( ¢fmide_scriptvar_value ) ; "&" & ¢fmide_scriptvar_name & "=" & GetAsURLEncoded( ¢fmide_scriptvar_value ) ) ;
-
-¢i = ¢i + 1
-
-];
-
-¢result
-
-)]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$fmide_parameters</Name></Step>
-		<Step enable="True" id="141" name="Set Variable"><Value><Calculation><![CDATA[$protocol & "://" & $server_address & "/" & GetAsURLEncoded ( $file_name ) & "?script=fmIDE" & $fmide_parameters]]></Calculation></Value><Repetition><Calculation><![CDATA[1]]></Calculation></Repetition><Name>$fmide_url</Name></Step>
-		<Step enable="True" id="89" name="# (comment)"></Step>
-		<Step enable="True" id="68" name="If"><Calculation><![CDATA[not $get_fmide_url]]></Calculation></Step>
-		<Step enable="True" id="68" name="If"><Calculation><![CDATA[$fmide_debug]]></Calculation></Step>
-		<Step enable="True" id="87" name="Show Custom Dialog"><Message><Calculation><![CDATA[$fmide_url]]></Calculation></Message><Buttons><Button CommitState="True"><Calculation><![CDATA["OK"]]></Calculation></Button><Button CommitState="False"></Button><Button CommitState="False"></Button></Buttons></Step>
-		<Step enable="True" id="70" name="End If"></Step>
-		<Step enable="True" id="111" name="Open URL"><NoInteract state="True"></NoInteract><Calculation><![CDATA[$fmide_url]]></Calculation></Step>
-		<Step enable="True" id="70" name="End If"></Step>
-		<Step enable="True" id="89" name="# (comment)"></Step>
-		<Step enable="True" id="103" name="Exit Script"><Calculation><![CDATA[JSONSetElement ( "{}" ; "fmide_url" ; $fmide_url ; JSONString )]]></Calculation></Step>
-		<Step enable="True" id="89" name="# (comment)"></Step>
-</fmxmlsnippet>
+Case( not IsEmp
